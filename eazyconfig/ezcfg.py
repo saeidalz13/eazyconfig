@@ -1,7 +1,11 @@
+import re
+
 from configparser import ConfigParser
 from pathlib import Path
 from typing import Dict, List
 from .assets import trim_path_string
+from colorama import just_fix_windows_console
+just_fix_windows_console()
 
 
 class Configure:
@@ -73,3 +77,63 @@ class Configure:
                     raise ValueError(
                         f"Failed to convert {key} to float\n", ve)
         return parameters
+
+
+class ConfigureText():
+    def __init__(
+        self,
+        path_config_file: str | Path,
+        mandatory_vars: List[str],
+        optional_vars: List[str] = None,
+        numeric_vars: List[str] = None,
+        boolean_vars: List[str] = None,
+    ) -> None:
+        """
+        This class is to prepare the inputs without the conventional .cfg file (no headers)
+        The parameters and the value should be separated by "="
+        "#" counts as comments in the text file and will NOT be processed
+        """
+        self.path_config_file = path_config_file
+        self.mandatory_vars = mandatory_vars
+        self.optional_vars = optional_vars
+        self.numeric_vars = numeric_vars
+        self.boolean_vars = boolean_vars
+
+    def prepare_input_params(self) -> Dict:
+        try:
+            constants = {}
+            with open(self.path_config_file, "r") as f:
+                for line in f:
+                    if not re.search(r"^#", line) and line.strip():
+                        key, var = line.strip().replace('"', '').replace("'", "").split("=")
+                        key = key.strip()
+                        var = var.strip()
+
+                        if key in self.mandatory_vars and not var:
+                            raise Exception(
+                                "Make sure you provide information for the mandatory input params")
+
+                        elif key in self.numeric_vars:
+                            try:
+                                constants[key] = float(var)
+                            except Exception as e:
+                                raise Exception(
+                                    f"Provide a number {self.numeric_vars}", e)
+
+                        elif key in self.boolean_vars:
+                            try:
+                                constants[key] = eval(var.capitalize())
+                            except Exception as e:
+                                raise Exception(
+                                    f"Provide a boolean for {self.boolean_vars}", e)
+
+                        else:
+                            constants[key] = var
+
+            if not constants:
+                raise Exception(
+                    "Please provide all the required information\n")
+            return constants
+
+        except Exception as e:
+            raise Exception("Failed to extract input parameters", e)
