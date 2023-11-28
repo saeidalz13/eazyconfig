@@ -84,7 +84,6 @@ class ConfigureText():
         self,
         path_config_file: str | Path,
         mandatory_vars: List[str],
-        optional_vars: List[str] = None,
         numeric_vars: List[str] = None,
         boolean_vars: List[str] = None,
     ) -> None:
@@ -95,7 +94,6 @@ class ConfigureText():
         """
         self.path_config_file = path_config_file
         self.mandatory_vars = mandatory_vars
-        self.optional_vars = optional_vars
         self.numeric_vars = numeric_vars
         self.boolean_vars = boolean_vars
 
