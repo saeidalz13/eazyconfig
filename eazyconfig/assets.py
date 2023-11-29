@@ -1,6 +1,8 @@
+import logging
+import colorlog
 from typing import List
 from pathlib import Path
-from .constants import BashColors as bc
+from .constants import BashColors as bc, Format
 from colorama import just_fix_windows_console
 just_fix_windows_console()
 
@@ -55,6 +57,32 @@ def get_input_output_cmdline():
                 f"{bc.BRed}This directory does NOT exist, please try again!{bc.Reset}\n")
 
     return path_input, path_output
+
+
+def get_logger(name: str, filename=None, level=logging.INFO):
+    if filename is not None:
+        logging.basicConfig(
+            filename=filename,
+            level=level,
+            format=Format.file_log.value
+        )
+    else:
+        logging.basicConfig(
+            level=level,
+            format=Format.file_log.value
+        )
+
+    logger = logging.getLogger(name)
+
+    handler = colorlog.StreamHandler()
+    handler.setFormatter(
+        colorlog.ColoredFormatter(
+            Format.stream_log.value,
+            datefmt="%Y-%m-%d %H:%M:%S %Z")
+    )
+    logger.addHandler(handler)
+    return logger
+
 
 
 def make_uyellow_newline(string: str) -> str:
