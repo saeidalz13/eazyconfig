@@ -59,28 +59,23 @@ def get_input_output_cmdline():
     return path_input, path_output
 
 
-def get_logger(name: str, filename=None, level=logging.INFO):
+def get_logger(name: str, filename: str=None, level=logging.INFO):
+    logger = logging.getLogger(name)
+
     if filename is not None:
         logging.basicConfig(
             filename=filename,
-            level=level,
             format=Format.file_log.value
         )
-    else:
-        logging.basicConfig(
-            level=level,
-            format=Format.file_log.value
-        )
-
-    logger = logging.getLogger(name)
 
     handler = colorlog.StreamHandler()
     handler.setFormatter(
         colorlog.ColoredFormatter(
             Format.stream_log.value,
-            datefmt="%Y-%m-%d %H:%M:%S %Z")
+            datefmt=Format.date)
     )
     logger.addHandler(handler)
+    logger.setLevel(level)
     return logger
 
 

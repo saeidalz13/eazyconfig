@@ -2,10 +2,10 @@ from setuptools import setup, find_packages
 
 setup(
     name='eazyconfig',
-    version='1.2.6',
+    version='1.2.9',
 
     description='Easy configuration of input files for Air Quality department',
-    long_description='A longer description of your package',
+    long_description='To faciliate the configuration an engineering project. It includes modules for reading config files, logging functions, etc.',
 
     author='Saeid Alizadeh',
     author_email='saeidalz96@gmail.com',
