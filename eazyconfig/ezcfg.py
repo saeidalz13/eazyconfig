@@ -14,6 +14,7 @@ class Configure:
         config_settings: Dict,
         path_config_file: str | Path,
         numeric_vars: List[str] = None,
+        int_vars: List[str] = None,
         mandatory_vars: List[str] = None
     ) -> None:
         """
@@ -37,6 +38,7 @@ class Configure:
         self.config_settings = config_settings
         self.path_config_file = path_config_file
         self.numeric_vars = numeric_vars
+        self.int_vars = int_vars
         self.mandatory_vars = mandatory_vars
 
     def prepare_input_params(self) -> Dict:
@@ -76,6 +78,34 @@ class Configure:
                 except ValueError as ve:
                     raise ValueError(
                         f"Failed to convert {key} to float\n", ve)
+
+                except Exception as e:
+                    raise Exception(
+                        "Unexpected error in converting str to float", e)
+        return parameters
+
+    def handle_ints(self, parameters: Dict):
+        for key, value in parameters.items():
+            if key in self.int_vars:
+                try:
+                    parameters[key] = int(value)
+
+                except ValueError as ve:
+                    raise ValueError(
+                        f"Failed to convert {key} to int\n", ve)
+
+                except Exception as e:
+                    raise Exception(
+                        "Unexpected error in converting str to int", e)
+        return parameters
+
+    def get_params(self) -> Dict:
+        parameters = self.prepare_input_params()
+        if self.numeric_vars is not None:
+            parameters = self.handle_numerics(parameters)
+
+        if self.int_vars is not None:
+            parameters = self.handle_ints(parameters)
         return parameters
 
 
