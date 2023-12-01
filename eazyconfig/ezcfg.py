@@ -16,7 +16,8 @@ class Configure:
         numeric_vars: List[str] = None,
         int_vars: List[str] = None,
         comma_sep_vars: List[str] = None,
-        mandatory_vars: List[str] = None
+        mandatory_vars: List[str] = None,
+        optional_vars: List[str] = None
     ) -> None:
         """
         Structure of the config file:\n
@@ -42,6 +43,7 @@ class Configure:
         self.int_vars = int_vars
         self.comma_sep_vars = comma_sep_vars
         self.mandatory_vars = mandatory_vars
+        self.optional_vars = optional_vars
 
     def prepare_input_params(self) -> Dict:
         try:
@@ -52,13 +54,19 @@ class Configure:
             for header, variables_names in self.config_settings.items():
                 for variable_name in variables_names:
                     variable = config.get(header, variable_name)
-                    if self.mandatory_vars is None:
-                        if not variable:
-                            raise Exception(
-                                f"Please provide information for {variable_name}\n")
 
+                    if self.optional_vars is None:
+                        if self.mandatory_vars is None:
+                            if not variable:
+                                raise Exception(
+                                    f"Please provide information for {variable_name}\n")
+
+                        else:
+                            if variable_name in self.mandatory_vars and not variable:
+                                raise Exception(
+                                    f"Please provide information for {variable_name}\n")
                     else:
-                        if variable_name in self.mandatory_vars and not variable:
+                        if variable_name not in self.optional_vars:
                             raise Exception(
                                 f"Please provide information for {variable_name}\n")
 
@@ -111,7 +119,6 @@ class Configure:
                     raise Exception(
                         "Unexpected error in converting str to int", e)
         return parameters
-    
 
     def get_params(self) -> Dict:
         parameters = self.prepare_input_params()
@@ -123,7 +130,7 @@ class Configure:
 
         if self.comma_sep_vars is not None:
             parameters = self.handle_comma_sep(parameters)
-            
+
         return parameters
 
 
