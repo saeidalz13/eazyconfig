@@ -15,6 +15,7 @@ class Configure:
         path_config_file: str | Path,
         numeric_vars: List[str] = None,
         int_vars: List[str] = None,
+        comma_sep_vars: List[str] = None,
         mandatory_vars: List[str] = None
     ) -> None:
         """
@@ -39,6 +40,7 @@ class Configure:
         self.path_config_file = path_config_file
         self.numeric_vars = numeric_vars
         self.int_vars = int_vars
+        self.comma_sep_vars = comma_sep_vars
         self.mandatory_vars = mandatory_vars
 
     def prepare_input_params(self) -> Dict:
@@ -99,6 +101,18 @@ class Configure:
                         "Unexpected error in converting str to int", e)
         return parameters
 
+    def handle_comma_sep(self, parameters: Dict):
+        for key, value in parameters.items():
+            if key in self.comma_sep_vars:
+                try:
+                    parameters[key] = value.split(",")
+
+                except Exception as e:
+                    raise Exception(
+                        "Unexpected error in converting str to int", e)
+        return parameters
+    
+
     def get_params(self) -> Dict:
         parameters = self.prepare_input_params()
         if self.numeric_vars is not None:
@@ -106,6 +120,10 @@ class Configure:
 
         if self.int_vars is not None:
             parameters = self.handle_ints(parameters)
+
+        if self.comma_sep_vars is not None:
+            parameters = self.handle_comma_sep(parameters)
+            
         return parameters
 
 
