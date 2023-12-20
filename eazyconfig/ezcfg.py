@@ -159,29 +159,27 @@ class ConfigureText():
                 for line in f:
                     if not re.search(r"^#", line) and line.strip():
                         key, var = line.strip().replace('"', '').replace("'", "").split("=")
-                        key = key.strip()
-                        var = var.strip()
+                        key, var = key.strip(), var.strip()
 
                         if key in self.mandatory_vars and not var:
-                            raise Exception(
-                                "Make sure you provide information for the mandatory input params")
+                            raise Exception("Make sure you provide information for the mandatory input params")
 
-                        elif key in self.numeric_vars:
+                        if self.numeric_vars is not None and key in self.numeric_vars:
                             try:
                                 constants[key] = float(var)
+                                continue
                             except Exception as e:
-                                raise Exception(
-                                    f"Provide a number {self.numeric_vars}", e)
+                                raise Exception(f"Provide a number {self.numeric_vars}", e)
 
-                        elif key in self.boolean_vars:
+                        if self.boolean_vars is not None and key in self.boolean_vars:
                             try:
                                 constants[key] = eval(var.capitalize())
+                                continue
                             except Exception as e:
                                 raise Exception(
                                     f"Provide a boolean for {self.boolean_vars}", e)
 
-                        else:
-                            constants[key] = var
+                        constants[key] = var
 
             if not constants:
                 raise Exception(
