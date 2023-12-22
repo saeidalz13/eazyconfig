@@ -53,7 +53,7 @@ class Configure:
 
             for header, variables_names in self.config_settings.items():
                 for variable_name in variables_names:
-                    variable = config.get(header, variable_name)
+                    variable = config.get(header, variable_name).strip()
 
                     if self.optional_vars is None:
                         if self.mandatory_vars is None:
@@ -66,9 +66,8 @@ class Configure:
                                 raise Exception(
                                     f"Please provide information for {variable_name}\n")
                     else:
-                        if variable_name not in self.optional_vars:
-                            raise Exception(
-                                f"Please provide information for {variable_name}\n")
+                        if not variable and variable_name not in self.optional_vars:
+                            raise Exception(f"Please provide information for {variable_name}\n")
 
                     variable = trim_path_string(variable)
                     parameters[variable_name] = variable
