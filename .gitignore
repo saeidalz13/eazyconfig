@@ -6,7 +6,7 @@ data
 # C extensions
 *.so
 setup.bat
-
+eazyconfig/tests
 # Distribution / packaging
 .Python
 build/
