@@ -1,12 +1,14 @@
 from setuptools import setup, find_packages
 from eazyconfig.constants import VERSION
+from pathlib import Path
+
 
 setup(
     name='eazyconfig',
     version=f'v{VERSION}',
 
     description='Easy configuration of input files for Air Quality department',
-    long_description='To faciliate the configuration an engineering project. It includes modules for reading config files, logging functions, etc.',
+    long_description=Path("README.md").read_text(),
 
     author='Saeid Alizadeh',
     author_email='saeidalz96@gmail.com',
@@ -28,4 +30,6 @@ setup(
 
     zip_safe=False,
     python_requires='>=3.11',
+    include_package_data=True
+    
 )

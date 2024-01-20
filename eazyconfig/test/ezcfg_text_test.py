@@ -11,7 +11,8 @@ PARAMS = {
     "list": ["f", "g", 'g'],
     "space": ["g", "h", 'gs'],
     "float": 234.51,
-    "boolean": False
+    "boolean": False,
+    "optional":""
 }
 
 
@@ -23,7 +24,8 @@ class TestEazyConfigText(unittest.TestCase):
             comma_delimited_vars=["list"],
             space_delimited_vars=["space"],
             float_vars=["float"],
-            boolean_vars=["boolean"]
+            boolean_vars=["boolean"],
+            optional_vars=["optional"]
         )
 
     def test_get_params(self) -> None:
