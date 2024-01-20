@@ -1,8 +1,9 @@
 from setuptools import setup, find_packages
+from eazyconfig.constants import VERSION
 
 setup(
     name='eazyconfig',
-    version='1.3.5',
+    version=f'v{VERSION}',
 
     description='Easy configuration of input files for Air Quality department',
     long_description='To faciliate the configuration an engineering project. It includes modules for reading config files, logging functions, etc.',

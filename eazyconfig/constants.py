@@ -1,6 +1,9 @@
 import enum
 
 
+VERSION = "2.0"
+
+
 class Format(enum.Enum):
     file_log = "[%(levelname)s]-%(asctime)s:%(name)s||%(funcName)s-[%(lineno)d]->%(message)s"
     stream_log = '[%(log_color)s%(levelname)s%(reset)s]: %(message)s'

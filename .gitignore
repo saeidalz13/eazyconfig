@@ -6,6 +6,8 @@ data
 # C extensions
 *.so
 setup.bat
+.vscode
+junk*
 
 # Distribution / packaging
 .Python
