@@ -2,14 +2,15 @@ import unittest
 from eazyconfig.ezcfg import ConfigureCfg
 
 PATH_CONFIG_FILE = r"eazyconfig\test\config.cfg"
+SECTIONS_TO_INCLUDE = ["path" , "column_number", "specs"]
 CONFIG_SETTINGS = {
     "path": ['input_csv', 'output'],
     "column_number": ["x", "y", "base_elevation", "flagpole_height"],
     "specs": ["unit", "list", "space", "float", "boolean", "optional"]
 }
 PARAMS = {
-    'input_csv': 'C:\\Air Quality - Local\\100 AQTools Software\\All Receptors Combined negative elevations removed.csv',
-    'output': 'C:\\Air Quality - Local\\100 AQTools Software',
+    'input_csv': 'path/dir1',
+    'output': 'path/dir2/',
     'x': 1,
     'y': 2,
     'base_elevation': 3,
@@ -55,7 +56,8 @@ class TestEazyConfigCfg(unittest.TestCase):
             space_delimited_vars=["space"],
             float_vars=["float"],
             boolean_vars=["boolean"],
-            optional_vars=["optional"]
+            optional_vars=["optional"],
+            sections_to_incluce = SECTIONS_TO_INCLUDE
         ).get_params()
         self.assertEquals(self.params, PARAMS)
 

@@ -19,7 +19,7 @@ class Configure(ABC):
         boolean_vars: List[str] = None,
         comma_delimited_vars: List[str] = None,
         space_delimited_vars: List[str] = None,
-        optional_vars: List[str] = None
+        optional_vars: List[str] = None,
     ) -> None:
         super().__init__()
         self.path_config_file = path_config_file
@@ -131,6 +131,9 @@ class ConfigureCfg(Configure):
     option values are read in as a string by default. In case of other data types, specify
     them as the input arguments in a list. e.g: int_vars, float_vars
     """
+    def __init__(self, path_config_file: str | Path = None, float_vars: List[str] = None, int_vars: List[str] = None, boolean_vars: List[str] = None, comma_delimited_vars: List[str] = None, space_delimited_vars: List[str] = None, optional_vars: List[str] = None, sections_to_incluce: List[str] = None) -> None:
+        super().__init__(path_config_file, float_vars, int_vars, boolean_vars, comma_delimited_vars, space_delimited_vars, optional_vars)
+        self.sections_to_incluce: List[str] = sections_to_incluce
 
     def _init_config(self) -> None:
         self.config = ConfigParser()
@@ -146,6 +149,9 @@ class ConfigureCfg(Configure):
     def _prepare_input_params(self) -> Dict:
         try:
             for section, options in self.config_settings.items():
+                if self.sections_to_incluce is not None and section not in self.sections_to_incluce:
+                    continue
+
                 for option in options:
                     variable = trim_path_string(
                         self.config.get(section, option))
@@ -153,6 +159,9 @@ class ConfigureCfg(Configure):
                         continue
                     self._check_if_option_has_value(option, variable)
                     self.params[option] = variable
+                continue
+                    
+
 
         except Exception as e:
             raise Exception(f"Failed to extract input parameters\n", e)
