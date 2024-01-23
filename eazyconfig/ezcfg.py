@@ -55,7 +55,7 @@ class Configure(ABC):
 
     def _check_if_option_has_value(self, option: str, variable: str) -> None:
         if not variable:
-            raise Exception(f"Please provide information for {option}\n")
+            raise Exception(f"Please provide information for {option}")
 
     def _check_if_params_is_empty(self) -> None:
         if not self.params:
@@ -63,51 +63,48 @@ class Configure(ABC):
 
     def _handle_floats(self):
         try:
-            self.params = {key: float(
-                value) if key in self.float_vars else value for key, value in self.params.items()}
+            self.params = {key: float(value) if value and key in self.float_vars else value for key, value in self.params.items()}
         except ValueError as ve:
             raise ValueError(
-                f"Failed to execute float conversions for float_vars\n", ve)
+                f"Failed to execute float conversions for float_vars", ve)
 
     def _handle_ints(self):
         try:
-            self.params = {key: int(
-                value) if key in self.int_vars else value for key, value in self.params.items()}
+            self.params = {key: int(value) if value and key in self.int_vars else value for key, value in self.params.items()}
         except ValueError as ve:
             raise ValueError(
-                f"Failed to execute int conversions for int_vars\n", ve)
+                f"Failed to execute int conversions for int_vars", ve)
 
     def _handle_booleans(self):
         try:
-            self.params = {key: eval(value.capitalize(
-            )) if key in self.boolean_vars else value for key, value in self.params.items()}
+            self.params = {key: eval(value.capitalize()) if value and key in self.boolean_vars else value for key, value in self.params.items()}
         except ValueError as ve:
             raise ValueError(
-                f"Failed to execute boolean conversions for boolean_vars\n", ve)
+                f"Failed to execute boolean conversions for boolean_vars", ve)
 
     def _handle_comma_delimited(self):
         try:
             for key, value in self.params.items():
-                if key in self.comma_delimited_vars:
+                if value and key in self.comma_delimited_vars:
                     _values = value.strip().split(",")
                     _values = [_value.strip() for _value in _values if _value]
                     self.params[key] = _values
 
         except ValueError as ve:
             raise ValueError(
-                f"Failed to separate the variable into a list for comma_delimited_vars\n", ve)
+                f"Failed to separate the variable into a list for comma_delimited_vars", ve)
 
     def _handle_space_delimited(self):
         try:
             for key, value in self.params.items():
-                if key in self.space_delimited_vars:
+                if value and key in self.space_delimited_vars:
                     _values = re.split(r"\s+", value.strip())
                     _values = [_value.strip() for _value in _values if _value]
                     self.params[key] = _values
 
         except ValueError as ve:
             raise ValueError(
-                f"Failed to separate the variable into a list for space_delimited_vars\n", ve)
+                f"Failed to separate the variable into a list for space_delimited_vars", ve)
 
     def _handle_special_operations(self) -> None:
         if self.float_vars is not None:
@@ -120,7 +117,7 @@ class Configure(ABC):
             self._handle_comma_delimited()
         if self.space_delimited_vars is not None:
             self._handle_space_delimited()
-
+    
 
 class ConfigureCfg(Configure):
     """
@@ -131,9 +128,10 @@ class ConfigureCfg(Configure):
     option values are read in as a string by default. In case of other data types, specify
     them as the input arguments in a list. e.g: int_vars, float_vars
     """
-    def __init__(self, path_config_file: str | Path = None, float_vars: List[str] = None, int_vars: List[str] = None, boolean_vars: List[str] = None, comma_delimited_vars: List[str] = None, space_delimited_vars: List[str] = None, optional_vars: List[str] = None, sections_to_incluce: List[str] = None) -> None:
+    def __init__(self, path_config_file: str | Path = None, float_vars: List[str] = None, int_vars: List[str] = None, boolean_vars: List[str] = None, comma_delimited_vars: List[str] = None, space_delimited_vars: List[str] = None, newline_delimited_vars: List[str] = None, optional_vars: List[str] = None, sections_to_incluce: List[str] = None) -> None:
         super().__init__(path_config_file, float_vars, int_vars, boolean_vars, comma_delimited_vars, space_delimited_vars, optional_vars)
-        self.sections_to_incluce: List[str] = sections_to_incluce
+        self.sections_to_incluce = sections_to_incluce
+        self.newline_delimited_vars = newline_delimited_vars
 
     def _init_config(self) -> None:
         self.config = ConfigParser()
@@ -160,11 +158,17 @@ class ConfigureCfg(Configure):
                     self._check_if_option_has_value(option, variable)
                     self.params[option] = variable
                 continue
-                    
-
-
+        
         except Exception as e:
-            raise Exception(f"Failed to extract input parameters\n", e)
+            raise Exception(f"Failed to extract input parameters", e)
+
+    def _handle_newline_delimited(self):
+        if self.newline_delimited_vars is not None:
+            try:
+                self.params = {key: re.split("\n", value) if value and key in self.newline_delimited_vars else value for key, value in self.params.items()}
+            except ValueError as ve:
+                raise ValueError(
+                    f"Failed to execute boolean conversions for newline_delimited_vars", ve)
 
     def get_params(self) -> Dict:
         self._fetch_path_config_file()
@@ -173,6 +177,7 @@ class ConfigureCfg(Configure):
         self._prepare_config_settings()
         self._prepare_input_params()
         self._handle_special_operations()
+        self._handle_newline_delimited()
         self._check_if_params_is_empty()
         return self.params
 

@@ -2,11 +2,10 @@ import unittest
 from eazyconfig.ezcfg import ConfigureCfg
 
 PATH_CONFIG_FILE = r"eazyconfig\test\config.cfg"
-SECTIONS_TO_INCLUDE = ["path" , "column_number", "specs"]
 CONFIG_SETTINGS = {
     "path": ['input_csv', 'output'],
     "column_number": ["x", "y", "base_elevation", "flagpole_height"],
-    "specs": ["unit", "list", "space", "float", "boolean", "optional"]
+    "specs": ["unit", "list", "space", "float", "boolean", "boolean_optional", "optional", "newline"]
 }
 PARAMS = {
     'input_csv': 'path/dir1',
@@ -20,7 +19,9 @@ PARAMS = {
     "space": ["g", "h", 'gs'],
     "float": 234.51,
     "boolean": False,
-    "optional":""
+    "boolean_optional": "",
+    "optional":"",
+    "newline": ["something", "something one", "two three"]
 }
 
 
@@ -56,8 +57,9 @@ class TestEazyConfigCfg(unittest.TestCase):
             space_delimited_vars=["space"],
             float_vars=["float"],
             boolean_vars=["boolean"],
-            optional_vars=["optional"],
-            sections_to_incluce = SECTIONS_TO_INCLUDE
+            optional_vars=["optional", "boolean_optional"],
+            newline_delimited_vars=["newline"],
+            sections_to_incluce = ["path" , "column_number", "specs"]
         ).get_params()
         self.assertEquals(self.params, PARAMS)
 

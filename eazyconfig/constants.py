@@ -1,7 +1,7 @@
 import enum
 
 
-VERSION = "2.0"
+VERSION = "2.2"
 
 
 class Format(enum.Enum):
